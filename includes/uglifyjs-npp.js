@@ -1,6 +1,5 @@
+/*global Editor, require, jsMenu: true */
 var ug, jsp, pro;
-
-var tab = "    "; // \t
 
 function ensureUg() {
     if (ug) return;
@@ -9,14 +8,28 @@ function ensureUg() {
     pro = ug.uglify;
 }
 
+function getEditorConfig() {
+    var fullFileName = Editor.currentView.files[Editor.currentView.file];
+    // TBD: replace with a logic based on http://editorconfig.org
+    var isCmw = /^d:\\cmw\\/i.test(fullFileName);
+    var useTabs = isCmw, useCrLf = isCmw;
+    var eol = useCrLf ? '\r\n' : '\n';
+    var tab = useTabs ? "\t" : "    ";
+    return { eol: eol, tab: tab };
+}
+
 function doBeautify(options) {
+    var editorConfig = getEditorConfig();
+    var eol = editorConfig.eol;
+    var tab = editorConfig.tab;
+
     ensureUg();
 
     options = options || {};
     options.beautify = true;
-    
+
     var tabcnt = 0;
-    
+
     /*var pos0;
     if (Editor.currentView.pos > Editor.currentView.anchor) {
         pos0 = Editor.currentView.anchor;
@@ -47,14 +60,14 @@ function doBeautify(options) {
         } else break;
     }
     alert(tabcnt++);*/
-    
+
     var orig_code = (Editor.currentView.selection || Editor.currentView.text).replace(/^\s+/g, '');
     var syntax = (Editor.langs[Editor.currentView.lang] || '').toLowerCase();
     var final_code;
-    if (!Editor.currentView.selection && (syntax == "asp" || syntax == "html")) {
+    if (!Editor.currentView.selection && (syntax === "asp" || syntax === "html")) {
         final_code = orig_code.replace(/<script(|\s[^>]*?)>([\s\S]*?)<\/script>/gi, function($0, $1, $2) {
-            if (!$2 || $1 && $1.indexOf("runat=") != -1) return $0;
-            return "<script" + $1 + ">\r\n\t" + normalizeSpaces(pro.gen_code(jsp.parse($2), options), 1).replace(/^\s+|\s+$/ig, "") + "\r\n</script>";
+            if (!$2 || $1 && $1.indexOf("runat=") !== -1) return $0;
+            return "<script" + $1 + ">" + eol + tab + normalizeSpaces(pro.gen_code(jsp.parse($2), options), 1).replace(/^\s+|\s+$/ig, "") + eol + "</script>";
         });
     } else {
         var isJson = /^\s*(\{[\s\S]+\}|\[[\s\S]+\];?)\s*$/.test(orig_code);
@@ -67,7 +80,7 @@ function doBeautify(options) {
             final_code = final_code.replace(/;\s*$/, "");
         }
     }
-    final_code = final_code.replace(/\r\n|\n\r|\n|\r/g, "\r\n");
+    final_code = final_code.replace(/\r\n|\n\r|\n|\r/g, eol);
     if (Editor.currentView.selection)
         Editor.currentView.selection = final_code;
     else
@@ -75,7 +88,7 @@ function doBeautify(options) {
 }
 
 var menu;
-if (typeof jsMenu == "undefined") {
+if (typeof jsMenu === "undefined") {
     menu = jsMenu = Editor.addMenu("JavaScript");
 } else {
     menu = jsMenu;
@@ -122,14 +135,15 @@ menu.addItem({
 });
 
 function normalizeSpaces(s, extra) {
+    var tab = getEditorConfig().tab;
     return s.replace(/^( {4})*/gm, function($0) {
         return (new Array($0.length / 4 + 1 + (extra || 0))).join(tab);
     });
 }
 
 function HOP(obj, prop) {
-        return Object.prototype.hasOwnProperty.call(obj, prop);
-};
+    return Object.prototype.hasOwnProperty.call(obj, prop);
+}
 
 function ast_unique_names(ast, options) {
         var w = pro.ast_walker(), walk = w.walk, scope, cname = { value: -1 };
@@ -141,7 +155,7 @@ function ast_unique_names(ast, options) {
                 if (options.except && member(name, options.except))
                         return name;
                 return scope.get_mangled(name, newMangle);
-        };
+        }
 
         function get_define(name) {
                 if (options.defines) {
@@ -154,7 +168,7 @@ function ast_unique_names(ast, options) {
                         }
                         return null;
                 }
-        };
+        }
 
         function _lambda(name, args, body) {
                 var is_defun = this[0] == "defun";
@@ -165,7 +179,7 @@ function ast_unique_names(ast, options) {
                         return MAP(body, walk);
                 });
                 return [ this[0], name, args, body ];
-        };
+        }
 
         function with_scope(s, cont) {
                 var _scope = scope;
@@ -179,13 +193,13 @@ function ast_unique_names(ast, options) {
                 ret.scope = s;
                 scope = _scope;
                 return ret;
-        };
+        }
 
         function _vardefs(defs) {
                 return [ this[0], MAP(defs, function(d){
                         return [ get_mangled(d[0]), walk(d[1]) ];
                 }) ];
-        };
+        }
 
         return w.with_walkers({
                 "function": _lambda,
@@ -210,7 +224,7 @@ function ast_unique_names(ast, options) {
         }, function() {
                 return walk(pro.ast_add_scope(ast));
         });
-};
+}
 
 function catchAndShowException(f) {
     return function() {
