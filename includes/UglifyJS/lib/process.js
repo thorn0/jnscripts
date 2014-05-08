@@ -1344,7 +1344,7 @@ var DOT_CALL_NO_PARENS = jsp.array_to_hash([
         "regexp"
 ]);
 
-function make_string(str, ascii_only) {
+function make_string(str, ascii_only, is_json) {
         var dq = 0, sq = 0;
         str = str.replace(/[\\\b\f\n\r\t\x22\x27\u2028\u2029\u000b\0]/g, function(s){
                 switch (s) {
@@ -1364,7 +1364,7 @@ function make_string(str, ascii_only) {
                 return s;
         });
         if (ascii_only) str = to_ascii(str);
-        if (dq >= sq) return "'" + str.replace(/\x27/g, "\\'") + "'";
+        if (!is_json && dq >= sq) return "'" + str.replace(/\x27/g, "\\'") + "'";
         else return '"' + str.replace(/\x22/g, '\\"') + '"';
 };
 
@@ -1395,7 +1395,7 @@ function gen_code(ast, options) {
             space = beautify ? " " : "";
 
         function encode_string(str) {
-                var ret = make_string(str, options.ascii_only);
+                var ret = make_string(str, options.ascii_only, options.quote_keys);
                 if (options.inline_script)
                         ret = ret.replace(/<\x2fscript([>/\t\n\f\r ])/gi, "<\\/script$1");
                 return ret;
