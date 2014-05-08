@@ -33,10 +33,13 @@
         text: "JS Beautifier\tCtrl+Q",
         cmd: catchAndShowException(function() {
             ensureJsBeautifier();
-            var view_prop = Editor.currentView.selection ? 'selection' : 'text';
-            var orig_code = Editor.currentView[view_prop];
+            var view = Editor.currentView;
+            var view_prop = view.selection ? 'selection' : 'text';
+            var currentLine = view.line;
+            var orig_code = view[view_prop];
             var final_code = js_beautify(orig_code, getSettings());
-            Editor.currentView[view_prop] = normalizeEol(final_code);
+            view[view_prop] = normalizeEol(final_code);
+            view.line = currentLine;
         }),
         ctrl: true,
         key: 'q'
