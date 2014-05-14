@@ -33,13 +33,14 @@
         text: "JS Beautifier\tCtrl+Q",
         cmd: catchAndShowException(function() {
             ensureJsBeautifier();
-            var view = Editor.currentView;
-            var view_prop = view.selection ? 'selection' : 'text';
-            var currentLine = view.line;
-            var orig_code = view[view_prop];
-            var final_code = js_beautify(orig_code, getSettings());
-            view[view_prop] = normalizeEol(final_code);
-            view.line = currentLine;
+            var view = Editor.currentView,
+                savedLine = view.line,
+                viewProp = view.selection ? 'selection' : 'text',
+                origCode = view[viewProp],
+                finalCode = js_beautify(origCode, getSettings());
+            view[viewProp] = normalizeEol(finalCode);
+            view.line = savedLine + 7; // adjust the scroll position
+            view.line = savedLine;
         }),
         ctrl: true,
         key: 'q'
