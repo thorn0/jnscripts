@@ -31,22 +31,38 @@
 
     var action = {
         text: "JS Beautifier\tCtrl+Q",
-        cmd: catchAndShowException(function() {
-            ensureJsBeautifier();
-            var view = Editor.currentView,
-                savedLine = view.line,
-                viewProp = view.selection ? 'selection' : 'text',
-                origCode = view[viewProp],
-                finalCode = js_beautify(origCode, getSettings());
-            view[viewProp] = normalizeEol(finalCode);
-            view.line = savedLine + 7; // adjust the scroll position
-            view.line = savedLine;
-        }),
+        cmd: function() {
+            callBeautifier(getSettings());
+        },
         ctrl: true,
         key: 'q'
     };
     menu.addItem(action);
     addHotKey(action);
+
+    menu.addItem({
+        text: "JS Beautifier (2 spaces)",
+        cmd: function() {
+            var settings = getSettings();
+            settings.indent_with_tabs = false;
+            settings.indent_size = 2;
+            callBeautifier(settings);
+        }
+    });
+
+    function callBeautifier(settings) {
+        catchAndShowException(function() {
+            ensureJsBeautifier();
+            var view = Editor.currentView,
+                savedLine = view.line,
+                viewProp = view.selection ? 'selection' : 'text',
+                origCode = view[viewProp],
+                finalCode = js_beautify(origCode, settings);
+            view[viewProp] = normalizeEol(finalCode);
+            view.line = savedLine + 7; // adjust the scroll position
+            view.line = savedLine;
+        })();
+    }
 
     function catchAndShowException(f) {
         return function() {
