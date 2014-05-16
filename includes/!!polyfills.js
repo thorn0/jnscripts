@@ -29,6 +29,32 @@
         };
     }
 
+    // ==== Array.prototype.map
+
+    if (!Array.prototype.map) {
+        Array.prototype.map = function(fun /*, thisArg */ ) {
+            if (this == null || typeof fun !== "function") {
+                throw new TypeError();
+            }
+
+            var t = Object(this);
+            var len = t.length >>> 0;
+            var res = new Array(len);
+            var thisArg = arguments.length >= 2 ? arguments[1] : void 0;
+            for (var i = 0; i < len; i++) {
+                // NOTE: Absolute correctness would demand Object.defineProperty
+                //       be used.  But this method is fairly new, and failure is
+                //       possible only if Object.prototype or Array.prototype
+                //       has a property |i| (very unlikely), so use a less-correct
+                //       but more portable alternative.
+                if (i in t)
+                    res[i] = fun.call(thisArg, t[i], i, t);
+            }
+
+            return res;
+        };
+    }
+
     // ==== String.prototype.split ====
 
     /*!
@@ -77,14 +103,17 @@
                 return nativeSplit.call(str, separator, limit);
             }
             var output = [],
-                flags = (separator.ignoreCase ? "i" : "") +
-                (separator.multiline ? "m" : "") +
-                (separator.extended ? "x" : "") + // Proposed for ES6
-                (separator.sticky ? "y" : ""), // Firefox 3+
+                flags = (
+                    (separator.ignoreCase ? "i" : "") +
+                    (separator.multiline ? "m" : "") +
+                    (separator.extended ? "x" : "") + // Proposed for ES6
+                    (separator.sticky ? "y" : "") // Firefox 3+
+                ),
                 lastLastIndex = 0,
-                // Make `global` and avoid `lastIndex` issues by working with a copy
-                separator = new RegExp(separator.source, flags + "g"),
                 separator2, match, lastIndex, lastLength;
+            // Make `global` and avoid `lastIndex` issues by working with a copy
+            separator = new RegExp(separator.source, flags + "g");
+
             str += ""; // Type-convert
             if (!compliantExecNpcg) {
                 // Doesn't need flags gy, but they don't hurt
@@ -100,7 +129,7 @@
             limit = limit === undef ?
                 -1 >>> 0 : // Math.pow(2, 32) - 1
                 limit >>> 0; // ToUint32(limit)
-            while (match = separator.exec(str)) {
+            while ((match = separator.exec(str))) {
                 // `separator.lastIndex` is not reliable cross-browser
                 lastIndex = match.index + match[0].length;
                 if (lastIndex > lastLastIndex) {
@@ -147,4 +176,27 @@
         return self;
 
     }();
+
+    // ==== Object.create ====
+
+    if (typeof Object.create != 'function') {
+        (function() {
+            var F = function() {};
+            Object.create = function(o) {
+                if (arguments.length > 1) {
+                    throw Error('Second argument not supported');
+                }
+                if (o === null) {
+                    // for UglifyJS2
+                    // throw Error('Cannot set a null [[Prototype]]');
+                }
+                if (typeof o !== 'object') {
+                    throw TypeError('Argument must be an object');
+                }
+                F.prototype = o;
+                return new F();
+            };
+        })();
+    }
+
 })();
