@@ -57,7 +57,7 @@
                 savedLine = view.line,
                 viewProp = view.selection ? 'selection' : 'text',
                 origCode = view[viewProp],
-                finalCode = js_beautify(origCode, settings);
+                finalCode = js_beautify(normalizeEol(origCode), settings);
             view[viewProp] = normalizeEol(finalCode);
             view.line = savedLine + 7; // adjust the scroll position
             view.line = savedLine;
