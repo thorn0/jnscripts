@@ -1,3 +1,4 @@
+(function(){
 /***********************************************************************
 
   A JavaScript tokenizer / parser / beautifier / compressor.
@@ -597,10 +598,10 @@ var AST_Toplevel = DEFNODE("Toplevel", "globals", {
         var parameters = [];
 
         arg_parameter_pairs.forEach(function(pair) {
-            var splitAt = pair.lastIndexOf(":");
+            var split = pair.split(":");
 
-            args.push(pair.substr(0, splitAt));
-            parameters.push(pair.substr(splitAt + 1));
+            args.push(split[0]);
+            parameters.push(split[1]);
         });
 
         var wrapped_tl = "(function(" + parameters.join(",") + "){ '$ORIG'; })(" + args.join(",") + ")";
@@ -1454,7 +1455,14 @@ function is_identifier_char(ch) {
 };
 
 function is_identifier_string(str){
-    return /^[a-z_$][a-z0-9_$]*$/i.test(str);
+    var i = str.length;
+    if (i == 0) return false;
+    if (!is_identifier_start(str.charCodeAt(0))) return false;
+    while (--i >= 0) {
+        if (!is_identifier_char(str.charAt(i)))
+            return false;
+    }
+    return true;
 };
 
 function parse_js_number(num) {
@@ -4517,12 +4525,8 @@ function OutputStream(options) {
     DEFPRINT(AST_UnaryPrefix, function(self, output){
         var op = self.operator;
         output.print(op);
-        if (/^[a-z]/i.test(op)
-            || (/[+-]$/.test(op)
-                && self.expression instanceof AST_UnaryPrefix
-                && /^[+-]/.test(self.expression.operator))) {
+        if (/^[a-z]/i.test(op))
             output.space();
-        }
         self.expression.print(output);
     });
     DEFPRINT(AST_UnaryPostfix, function(self, output){
@@ -7197,357 +7201,163 @@ merge(Compressor.prototype, {
     OPT(AST_RegExp, literals_in_boolean_context);
 
 })();
-/***********************************************************************
+if (typeof FILES != "undefined") exports["FILES"] = FILES;
+if (typeof sys != "undefined") exports["sys"] = sys;
+if (typeof console != "undefined") exports["console"] = console;
+if (typeof MOZ_SourceMap != "undefined") exports["MOZ_SourceMap"] = MOZ_SourceMap;
+if (typeof find_if != "undefined") exports["find_if"] = find_if;
+if (typeof member != "undefined") exports["member"] = member;
+if (typeof array_to_hash != "undefined") exports["array_to_hash"] = array_to_hash;
+if (typeof push_uniq != "undefined") exports["push_uniq"] = push_uniq;
+if (typeof set_difference != "undefined") exports["set_difference"] = set_difference;
+if (typeof repeat_string != "undefined") exports["repeat_string"] = repeat_string;
+if (typeof makePredicate != "undefined") exports["makePredicate"] = makePredicate;
+if (typeof noop != "undefined") exports["noop"] = noop;
+if (typeof characters != "undefined") exports["characters"] = characters;
+if (typeof remove != "undefined") exports["remove"] = remove;
+if (typeof merge != "undefined") exports["merge"] = merge;
+if (typeof DefaultsError != "undefined") exports["DefaultsError"] = DefaultsError;
+if (typeof all != "undefined") exports["all"] = all;
+if (typeof MAP != "undefined") exports["MAP"] = MAP;
+if (typeof mergeSort != "undefined") exports["mergeSort"] = mergeSort;
+if (typeof Dictionary != "undefined") exports["Dictionary"] = Dictionary;
+if (typeof string_template != "undefined") exports["string_template"] = string_template;
+if (typeof defaults != "undefined") exports["defaults"] = defaults;
+if (typeof set_intersection != "undefined") exports["set_intersection"] = set_intersection;
+if (typeof slice != "undefined") exports["slice"] = slice;
+if (typeof AST_Switch != "undefined") exports["AST_Switch"] = AST_Switch;
+if (typeof AST_LabelRef != "undefined") exports["AST_LabelRef"] = AST_LabelRef;
+if (typeof AST_Definitions != "undefined") exports["AST_Definitions"] = AST_Definitions;
+if (typeof AST_SymbolVar != "undefined") exports["AST_SymbolVar"] = AST_SymbolVar;
+if (typeof AST_Null != "undefined") exports["AST_Null"] = AST_Null;
+if (typeof AST_Array != "undefined") exports["AST_Array"] = AST_Array;
+if (typeof AST_Directive != "undefined") exports["AST_Directive"] = AST_Directive;
+if (typeof AST_ObjectGetter != "undefined") exports["AST_ObjectGetter"] = AST_ObjectGetter;
+if (typeof AST_String != "undefined") exports["AST_String"] = AST_String;
+if (typeof AST_RegExp != "undefined") exports["AST_RegExp"] = AST_RegExp;
+if (typeof AST_SymbolCatch != "undefined") exports["AST_SymbolCatch"] = AST_SymbolCatch;
+if (typeof AST_Assign != "undefined") exports["AST_Assign"] = AST_Assign;
+if (typeof AST_NaN != "undefined") exports["AST_NaN"] = AST_NaN;
+if (typeof AST_Default != "undefined") exports["AST_Default"] = AST_Default;
+if (typeof AST_SymbolConst != "undefined") exports["AST_SymbolConst"] = AST_SymbolConst;
+if (typeof AST_Number != "undefined") exports["AST_Number"] = AST_Number;
+if (typeof AST_Debugger != "undefined") exports["AST_Debugger"] = AST_Debugger;
+if (typeof AST_Catch != "undefined") exports["AST_Catch"] = AST_Catch;
+if (typeof AST_Call != "undefined") exports["AST_Call"] = AST_Call;
+if (typeof AST_Binary != "undefined") exports["AST_Binary"] = AST_Binary;
+if (typeof AST_Node != "undefined") exports["AST_Node"] = AST_Node;
+if (typeof AST_Token != "undefined") exports["AST_Token"] = AST_Token;
+if (typeof AST_Try != "undefined") exports["AST_Try"] = AST_Try;
+if (typeof AST_Continue != "undefined") exports["AST_Continue"] = AST_Continue;
+if (typeof AST_Label != "undefined") exports["AST_Label"] = AST_Label;
+if (typeof AST_Break != "undefined") exports["AST_Break"] = AST_Break;
+if (typeof AST_UnaryPostfix != "undefined") exports["AST_UnaryPostfix"] = AST_UnaryPostfix;
+if (typeof AST_True != "undefined") exports["AST_True"] = AST_True;
+if (typeof AST_SymbolAccessor != "undefined") exports["AST_SymbolAccessor"] = AST_SymbolAccessor;
+if (typeof AST_Unary != "undefined") exports["AST_Unary"] = AST_Unary;
+if (typeof AST_With != "undefined") exports["AST_With"] = AST_With;
+if (typeof AST_Boolean != "undefined") exports["AST_Boolean"] = AST_Boolean;
+if (typeof AST_Conditional != "undefined") exports["AST_Conditional"] = AST_Conditional;
+if (typeof AST_Seq != "undefined") exports["AST_Seq"] = AST_Seq;
+if (typeof AST_Object != "undefined") exports["AST_Object"] = AST_Object;
+if (typeof AST_Hole != "undefined") exports["AST_Hole"] = AST_Hole;
+if (typeof AST_Defun != "undefined") exports["AST_Defun"] = AST_Defun;
+if (typeof AST_Undefined != "undefined") exports["AST_Undefined"] = AST_Undefined;
+if (typeof AST_SymbolLambda != "undefined") exports["AST_SymbolLambda"] = AST_SymbolLambda;
+if (typeof AST_SymbolFunarg != "undefined") exports["AST_SymbolFunarg"] = AST_SymbolFunarg;
+if (typeof AST_Function != "undefined") exports["AST_Function"] = AST_Function;
+if (typeof AST_Dot != "undefined") exports["AST_Dot"] = AST_Dot;
+if (typeof AST_Var != "undefined") exports["AST_Var"] = AST_Var;
+if (typeof AST_SwitchBranch != "undefined") exports["AST_SwitchBranch"] = AST_SwitchBranch;
+if (typeof AST_If != "undefined") exports["AST_If"] = AST_If;
+if (typeof AST_Do != "undefined") exports["AST_Do"] = AST_Do;
+if (typeof AST_Statement != "undefined") exports["AST_Statement"] = AST_Statement;
+if (typeof AST_Lambda != "undefined") exports["AST_Lambda"] = AST_Lambda;
+if (typeof AST_Constant != "undefined") exports["AST_Constant"] = AST_Constant;
+if (typeof AST_Const != "undefined") exports["AST_Const"] = AST_Const;
+if (typeof AST_VarDef != "undefined") exports["AST_VarDef"] = AST_VarDef;
+if (typeof AST_Jump != "undefined") exports["AST_Jump"] = AST_Jump;
+if (typeof AST_PropAccess != "undefined") exports["AST_PropAccess"] = AST_PropAccess;
+if (typeof AST_Infinity != "undefined") exports["AST_Infinity"] = AST_Infinity;
+if (typeof AST_DWLoop != "undefined") exports["AST_DWLoop"] = AST_DWLoop;
+if (typeof AST_UnaryPrefix != "undefined") exports["AST_UnaryPrefix"] = AST_UnaryPrefix;
+if (typeof walk_body != "undefined") exports["walk_body"] = walk_body;
+if (typeof DEFNODE != "undefined") exports["DEFNODE"] = DEFNODE;
+if (typeof AST_EmptyStatement != "undefined") exports["AST_EmptyStatement"] = AST_EmptyStatement;
+if (typeof AST_ObjectKeyVal != "undefined") exports["AST_ObjectKeyVal"] = AST_ObjectKeyVal;
+if (typeof AST_Toplevel != "undefined") exports["AST_Toplevel"] = AST_Toplevel;
+if (typeof AST_StatementWithBody != "undefined") exports["AST_StatementWithBody"] = AST_StatementWithBody;
+if (typeof AST_For != "undefined") exports["AST_For"] = AST_For;
+if (typeof AST_Finally != "undefined") exports["AST_Finally"] = AST_Finally;
+if (typeof AST_Scope != "undefined") exports["AST_Scope"] = AST_Scope;
+if (typeof AST_ForIn != "undefined") exports["AST_ForIn"] = AST_ForIn;
+if (typeof AST_Accessor != "undefined") exports["AST_Accessor"] = AST_Accessor;
+if (typeof AST_LoopControl != "undefined") exports["AST_LoopControl"] = AST_LoopControl;
+if (typeof AST_ObjectProperty != "undefined") exports["AST_ObjectProperty"] = AST_ObjectProperty;
+if (typeof AST_BlockStatement != "undefined") exports["AST_BlockStatement"] = AST_BlockStatement;
+if (typeof AST_This != "undefined") exports["AST_This"] = AST_This;
+if (typeof AST_Block != "undefined") exports["AST_Block"] = AST_Block;
+if (typeof AST_Case != "undefined") exports["AST_Case"] = AST_Case;
+if (typeof AST_Exit != "undefined") exports["AST_Exit"] = AST_Exit;
+if (typeof AST_Sub != "undefined") exports["AST_Sub"] = AST_Sub;
+if (typeof AST_Return != "undefined") exports["AST_Return"] = AST_Return;
+if (typeof AST_While != "undefined") exports["AST_While"] = AST_While;
+if (typeof AST_IterationStatement != "undefined") exports["AST_IterationStatement"] = AST_IterationStatement;
+if (typeof AST_Throw != "undefined") exports["AST_Throw"] = AST_Throw;
+if (typeof AST_LabeledStatement != "undefined") exports["AST_LabeledStatement"] = AST_LabeledStatement;
+if (typeof AST_ObjectSetter != "undefined") exports["AST_ObjectSetter"] = AST_ObjectSetter;
+if (typeof TreeWalker != "undefined") exports["TreeWalker"] = TreeWalker;
+if (typeof AST_SimpleStatement != "undefined") exports["AST_SimpleStatement"] = AST_SimpleStatement;
+if (typeof AST_SymbolDeclaration != "undefined") exports["AST_SymbolDeclaration"] = AST_SymbolDeclaration;
+if (typeof AST_Atom != "undefined") exports["AST_Atom"] = AST_Atom;
+if (typeof AST_False != "undefined") exports["AST_False"] = AST_False;
+if (typeof AST_Symbol != "undefined") exports["AST_Symbol"] = AST_Symbol;
+if (typeof AST_SymbolDefun != "undefined") exports["AST_SymbolDefun"] = AST_SymbolDefun;
+if (typeof AST_New != "undefined") exports["AST_New"] = AST_New;
+if (typeof AST_SymbolRef != "undefined") exports["AST_SymbolRef"] = AST_SymbolRef;
+if (typeof KEYWORDS_BEFORE_EXPRESSION != "undefined") exports["KEYWORDS_BEFORE_EXPRESSION"] = KEYWORDS_BEFORE_EXPRESSION;
+if (typeof ASSIGNMENT != "undefined") exports["ASSIGNMENT"] = ASSIGNMENT;
+if (typeof is_identifier_start != "undefined") exports["is_identifier_start"] = is_identifier_start;
+if (typeof RE_OCT_NUMBER != "undefined") exports["RE_OCT_NUMBER"] = RE_OCT_NUMBER;
+if (typeof RE_HEX_NUMBER != "undefined") exports["RE_HEX_NUMBER"] = RE_HEX_NUMBER;
+if (typeof is_unicode_combining_mark != "undefined") exports["is_unicode_combining_mark"] = is_unicode_combining_mark;
+if (typeof UNARY_PREFIX != "undefined") exports["UNARY_PREFIX"] = UNARY_PREFIX;
+if (typeof is_unicode_connector_punctuation != "undefined") exports["is_unicode_connector_punctuation"] = is_unicode_connector_punctuation;
+if (typeof is_token != "undefined") exports["is_token"] = is_token;
+if (typeof js_error != "undefined") exports["js_error"] = js_error;
+if (typeof is_letter != "undefined") exports["is_letter"] = is_letter;
+if (typeof OPERATOR_CHARS != "undefined") exports["OPERATOR_CHARS"] = OPERATOR_CHARS;
+if (typeof RESERVED_WORDS != "undefined") exports["RESERVED_WORDS"] = RESERVED_WORDS;
+if (typeof PUNC_CHARS != "undefined") exports["PUNC_CHARS"] = PUNC_CHARS;
+if (typeof PRECEDENCE != "undefined") exports["PRECEDENCE"] = PRECEDENCE;
+if (typeof JS_Parse_Error != "undefined") exports["JS_Parse_Error"] = JS_Parse_Error;
+if (typeof WHITESPACE_CHARS != "undefined") exports["WHITESPACE_CHARS"] = WHITESPACE_CHARS;
+if (typeof is_identifier_char != "undefined") exports["is_identifier_char"] = is_identifier_char;
+if (typeof UNARY_POSTFIX != "undefined") exports["UNARY_POSTFIX"] = UNARY_POSTFIX;
+if (typeof KEYWORDS_ATOM != "undefined") exports["KEYWORDS_ATOM"] = KEYWORDS_ATOM;
+if (typeof parse != "undefined") exports["parse"] = parse;
+if (typeof is_identifier_string != "undefined") exports["is_identifier_string"] = is_identifier_string;
+if (typeof EX_EOF != "undefined") exports["EX_EOF"] = EX_EOF;
+if (typeof parse_js_number != "undefined") exports["parse_js_number"] = parse_js_number;
+if (typeof OPERATORS != "undefined") exports["OPERATORS"] = OPERATORS;
+if (typeof UNICODE != "undefined") exports["UNICODE"] = UNICODE;
+if (typeof RE_DEC_NUMBER != "undefined") exports["RE_DEC_NUMBER"] = RE_DEC_NUMBER;
+if (typeof REGEXP_MODIFIERS != "undefined") exports["REGEXP_MODIFIERS"] = REGEXP_MODIFIERS;
+if (typeof PUNC_BEFORE_EXPRESSION != "undefined") exports["PUNC_BEFORE_EXPRESSION"] = PUNC_BEFORE_EXPRESSION;
+if (typeof is_identifier != "undefined") exports["is_identifier"] = is_identifier;
+if (typeof KEYWORDS != "undefined") exports["KEYWORDS"] = KEYWORDS;
+if (typeof tokenizer != "undefined") exports["tokenizer"] = tokenizer;
+if (typeof is_alphanumeric_char != "undefined") exports["is_alphanumeric_char"] = is_alphanumeric_char;
+if (typeof ATOMIC_START_TOKEN != "undefined") exports["ATOMIC_START_TOKEN"] = ATOMIC_START_TOKEN;
+if (typeof is_digit != "undefined") exports["is_digit"] = is_digit;
+if (typeof STATEMENTS_WITH_LABELS != "undefined") exports["STATEMENTS_WITH_LABELS"] = STATEMENTS_WITH_LABELS;
+if (typeof TreeTransformer != "undefined") exports["TreeTransformer"] = TreeTransformer;
+if (typeof SymbolDef != "undefined") exports["SymbolDef"] = SymbolDef;
+if (typeof base54 != "undefined") exports["base54"] = base54;
+if (typeof OutputStream != "undefined") exports["OutputStream"] = OutputStream;
+if (typeof Compressor != "undefined") exports["Compressor"] = Compressor;
+if (typeof SourceMap != "undefined") exports["SourceMap"] = SourceMap;
+if (typeof minify != "undefined") exports["minify"] = minify;
+if (typeof describe_ast != "undefined") exports["describe_ast"] = describe_ast;
 
-  A JavaScript tokenizer / parser / beautifier / compressor.
-  https://github.com/mishoo/UglifyJS2
-
-  -------------------------------- (C) ---------------------------------
-
-                           Author: Mihai Bazon
-                         <mihai.bazon@gmail.com>
-                       http://mihai.bazon.net/blog
-
-  Distributed under the BSD license:
-
-    Copyright 2012 (c) Mihai Bazon <mihai.bazon@gmail.com>
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
-
-        * Redistributions of source code must retain the above
-          copyright notice, this list of conditions and the following
-          disclaimer.
-
-        * Redistributions in binary form must reproduce the above
-          copyright notice, this list of conditions and the following
-          disclaimer in the documentation and/or other materials
-          provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER “AS IS” AND ANY
-    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE
-    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
-    OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-    TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-    THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-    SUCH DAMAGE.
-
- ***********************************************************************/
-
-"use strict";
-
-// a small wrapper around fitzgen's source-map library
-function SourceMap(options) {
-    options = defaults(options, {
-        file : null,
-        root : null,
-        orig : null,
-
-        orig_line_diff : 0,
-        dest_line_diff : 0,
-    });
-    var generator = new MOZ_SourceMap.SourceMapGenerator({
-        file       : options.file,
-        sourceRoot : options.root
-    });
-    var orig_map = options.orig && new MOZ_SourceMap.SourceMapConsumer(options.orig);
-    function add(source, gen_line, gen_col, orig_line, orig_col, name) {
-        if (orig_map) {
-            var info = orig_map.originalPositionFor({
-                line: orig_line,
-                column: orig_col
-            });
-            if (info.source === null) {
-                return;
-            }
-            source = info.source;
-            orig_line = info.line;
-            orig_col = info.column;
-            name = info.name;
-        }
-        generator.addMapping({
-            generated : { line: gen_line + options.dest_line_diff, column: gen_col },
-            original  : { line: orig_line + options.orig_line_diff, column: orig_col },
-            source    : source,
-            name      : name
-        });
-    };
-    return {
-        add        : add,
-        get        : function() { return generator },
-        toString   : function() { return generator.toString() }
-    };
-};
-/***********************************************************************
-
-  A JavaScript tokenizer / parser / beautifier / compressor.
-  https://github.com/mishoo/UglifyJS2
-
-  -------------------------------- (C) ---------------------------------
-
-                           Author: Mihai Bazon
-                         <mihai.bazon@gmail.com>
-                       http://mihai.bazon.net/blog
-
-  Distributed under the BSD license:
-
-    Copyright 2012 (c) Mihai Bazon <mihai.bazon@gmail.com>
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions
-    are met:
-
-        * Redistributions of source code must retain the above
-          copyright notice, this list of conditions and the following
-          disclaimer.
-
-        * Redistributions in binary form must reproduce the above
-          copyright notice, this list of conditions and the following
-          disclaimer in the documentation and/or other materials
-          provided with the distribution.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDER “AS IS” AND ANY
-    EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-    PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE
-    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
-    OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-    PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
-    PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-    THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
-    TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
-    THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
-    SUCH DAMAGE.
-
- ***********************************************************************/
-
-"use strict";
-
-(function(){
-
-    var MOZ_TO_ME = {
-        TryStatement : function(M) {
-            return new AST_Try({
-                start    : my_start_token(M),
-                end      : my_end_token(M),
-                body     : from_moz(M.block).body,
-                bcatch   : from_moz(M.handlers ? M.handlers[0] : M.handler),
-                bfinally : M.finalizer ? new AST_Finally(from_moz(M.finalizer)) : null
-            });
-        },
-        CatchClause : function(M) {
-            return new AST_Catch({
-                start   : my_start_token(M),
-                end     : my_end_token(M),
-                argname : from_moz(M.param),
-                body    : from_moz(M.body).body
-            });
-        },
-        ObjectExpression : function(M) {
-            return new AST_Object({
-                start      : my_start_token(M),
-                end        : my_end_token(M),
-                properties : M.properties.map(function(prop){
-                    var key = prop.key;
-                    var name = key.type == "Identifier" ? key.name : key.value;
-                    var args = {
-                        start    : my_start_token(key),
-                        end      : my_end_token(prop.value),
-                        key      : name,
-                        value    : from_moz(prop.value)
-                    };
-                    switch (prop.kind) {
-                      case "init":
-                        return new AST_ObjectKeyVal(args);
-                      case "set":
-                        args.value.name = from_moz(key);
-                        return new AST_ObjectSetter(args);
-                      case "get":
-                        args.value.name = from_moz(key);
-                        return new AST_ObjectGetter(args);
-                    }
-                })
-            });
-        },
-        SequenceExpression : function(M) {
-            return AST_Seq.from_array(M.expressions.map(from_moz));
-        },
-        MemberExpression : function(M) {
-            return new (M.computed ? AST_Sub : AST_Dot)({
-                start      : my_start_token(M),
-                end        : my_end_token(M),
-                property   : M.computed ? from_moz(M.property) : M.property.name,
-                expression : from_moz(M.object)
-            });
-        },
-        SwitchCase : function(M) {
-            return new (M.test ? AST_Case : AST_Default)({
-                start      : my_start_token(M),
-                end        : my_end_token(M),
-                expression : from_moz(M.test),
-                body       : M.consequent.map(from_moz)
-            });
-        },
-        Literal : function(M) {
-            var val = M.value, args = {
-                start  : my_start_token(M),
-                end    : my_end_token(M)
-            };
-            if (val === null) return new AST_Null(args);
-            switch (typeof val) {
-              case "string":
-                args.value = val;
-                return new AST_String(args);
-              case "number":
-                args.value = val;
-                return new AST_Number(args);
-              case "boolean":
-                return new (val ? AST_True : AST_False)(args);
-              default:
-                args.value = val;
-                return new AST_RegExp(args);
-            }
-        },
-        UnaryExpression: From_Moz_Unary,
-        UpdateExpression: From_Moz_Unary,
-        Identifier: function(M) {
-            var p = FROM_MOZ_STACK[FROM_MOZ_STACK.length - 2];
-            return new (M.name == "this" ? AST_This
-                        : p.type == "LabeledStatement" ? AST_Label
-                        : p.type == "VariableDeclarator" && p.id === M ? (p.kind == "const" ? AST_SymbolConst : AST_SymbolVar)
-                        : p.type == "FunctionExpression" ? (p.id === M ? AST_SymbolLambda : AST_SymbolFunarg)
-                        : p.type == "FunctionDeclaration" ? (p.id === M ? AST_SymbolDefun : AST_SymbolFunarg)
-                        : p.type == "CatchClause" ? AST_SymbolCatch
-                        : p.type == "BreakStatement" || p.type == "ContinueStatement" ? AST_LabelRef
-                        : AST_SymbolRef)({
-                            start : my_start_token(M),
-                            end   : my_end_token(M),
-                            name  : M.name
-                        });
-        }
-    };
-
-    function From_Moz_Unary(M) {
-        var prefix = "prefix" in M ? M.prefix
-            : M.type == "UnaryExpression" ? true : false;
-        return new (prefix ? AST_UnaryPrefix : AST_UnaryPostfix)({
-            start      : my_start_token(M),
-            end        : my_end_token(M),
-            operator   : M.operator,
-            expression : from_moz(M.argument)
-        });
-    };
-
-    var ME_TO_MOZ = {};
-
-    map("Node", AST_Node);
-    map("Program", AST_Toplevel, "body@body");
-    map("Function", AST_Function, "id>name, params@argnames, body%body");
-    map("EmptyStatement", AST_EmptyStatement);
-    map("BlockStatement", AST_BlockStatement, "body@body");
-    map("ExpressionStatement", AST_SimpleStatement, "expression>body");
-    map("IfStatement", AST_If, "test>condition, consequent>body, alternate>alternative");
-    map("LabeledStatement", AST_LabeledStatement, "label>label, body>body");
-    map("BreakStatement", AST_Break, "label>label");
-    map("ContinueStatement", AST_Continue, "label>label");
-    map("WithStatement", AST_With, "object>expression, body>body");
-    map("SwitchStatement", AST_Switch, "discriminant>expression, cases@body");
-    map("ReturnStatement", AST_Return, "argument>value");
-    map("ThrowStatement", AST_Throw, "argument>value");
-    map("WhileStatement", AST_While, "test>condition, body>body");
-    map("DoWhileStatement", AST_Do, "test>condition, body>body");
-    map("ForStatement", AST_For, "init>init, test>condition, update>step, body>body");
-    map("ForInStatement", AST_ForIn, "left>init, right>object, body>body");
-    map("DebuggerStatement", AST_Debugger);
-    map("FunctionDeclaration", AST_Defun, "id>name, params@argnames, body%body");
-    map("VariableDeclaration", AST_Var, "declarations@definitions");
-    map("VariableDeclarator", AST_VarDef, "id>name, init>value");
-
-    map("ThisExpression", AST_This);
-    map("ArrayExpression", AST_Array, "elements@elements");
-    map("FunctionExpression", AST_Function, "id>name, params@argnames, body%body");
-    map("BinaryExpression", AST_Binary, "operator=operator, left>left, right>right");
-    map("AssignmentExpression", AST_Assign, "operator=operator, left>left, right>right");
-    map("LogicalExpression", AST_Binary, "operator=operator, left>left, right>right");
-    map("ConditionalExpression", AST_Conditional, "test>condition, consequent>consequent, alternate>alternative");
-    map("NewExpression", AST_New, "callee>expression, arguments@args");
-    map("CallExpression", AST_Call, "callee>expression, arguments@args");
-
-    /* -----[ tools ]----- */
-
-    function my_start_token(moznode) {
-        return new AST_Token({
-            file   : moznode.loc && moznode.loc.source,
-            line   : moznode.loc && moznode.loc.start.line,
-            col    : moznode.loc && moznode.loc.start.column,
-            pos    : moznode.start,
-            endpos : moznode.start
-        });
-    };
-
-    function my_end_token(moznode) {
-        return new AST_Token({
-            file   : moznode.loc && moznode.loc.source,
-            line   : moznode.loc && moznode.loc.end.line,
-            col    : moznode.loc && moznode.loc.end.column,
-            pos    : moznode.end,
-            endpos : moznode.end
-        });
-    };
-
-    function map(moztype, mytype, propmap) {
-        var moz_to_me = "function From_Moz_" + moztype + "(M){\n";
-        moz_to_me += "return new mytype({\n" +
-            "start: my_start_token(M),\n" +
-            "end: my_end_token(M)";
-
-        if (propmap) propmap.split(/\s*,\s*/).forEach(function(prop){
-            var m = /([a-z0-9$_]+)(=|@|>|%)([a-z0-9$_]+)/i.exec(prop);
-            if (!m) throw new Error("Can't understand property map: " + prop);
-            var moz = "M." + m[1], how = m[2], my = m[3];
-            moz_to_me += ",\n" + my + ": ";
-            if (how == "@") {
-                moz_to_me += moz + ".map(from_moz)";
-            } else if (how == ">") {
-                moz_to_me += "from_moz(" + moz + ")";
-            } else if (how == "=") {
-                moz_to_me += moz;
-            } else if (how == "%") {
-                moz_to_me += "from_moz(" + moz + ").body";
-            } else throw new Error("Can't understand operator in propmap: " + prop);
-        });
-        moz_to_me += "\n})}";
-
-        // moz_to_me = parse(moz_to_me).print_to_string({ beautify: true });
-        // console.log(moz_to_me);
-
-        moz_to_me = new Function("mytype", "my_start_token", "my_end_token", "from_moz", "return(" + moz_to_me + ")")(
-            mytype, my_start_token, my_end_token, from_moz
-        );
-        return MOZ_TO_ME[moztype] = moz_to_me;
-    };
-
-    var FROM_MOZ_STACK = null;
-
-    function from_moz(node) {
-        FROM_MOZ_STACK.push(node);
-        var ret = node != null ? MOZ_TO_ME[node.type](node) : null;
-        FROM_MOZ_STACK.pop();
-        return ret;
-    };
-
-    AST_Node.from_mozilla_ast = function(node){
-        var save_stack = FROM_MOZ_STACK;
-        FROM_MOZ_STACK = [];
-        var ast = from_moz(node);
-        FROM_MOZ_STACK = save_stack;
-        return ast;
-    };
-
-})();
+}());

@@ -1,0 +1,8 @@
+{
+  "name": "jnscripts",
+  "private": true,
+  "dependencies": {
+    "streamee": "^0.5.3",
+    "uglify-js": "^2.4.13"
+  }
+}
