@@ -3,6 +3,7 @@
 
     function getSettings() {
         var settings = {
+            preserve_newlines: true,
             max_preserve_newlines: 2,
             jslint: true
         };
@@ -60,11 +61,16 @@
         catchAndShowException(function() {
             ensureBeautifiers();
             var view = Editor.currentView,
-                beautifier = /\.(less|css)$/i.test(view.files[view.file]) ? css_beautify : js_beautify,
+                css = /\.(less|css)$/i.test(view.files[view.file]),
+                beautifier = css ? css_beautify : js_beautify,
                 savedLine = view.line,
                 viewProp = view.selection ? 'selection' : 'text',
                 origCode = view[viewProp],
                 finalCode = beautifier(normalizeEol(origCode), settings);
+            if (css) {
+                // fix broken LESS markup
+                finalCode = finalCode.replace(/(\S:) (extend|hover|focus|active)\b/g, '$1$2');
+            }
             view[viewProp] = normalizeEol(finalCode);
             view.line = savedLine + 7; // adjust the scroll position
             view.line = savedLine;

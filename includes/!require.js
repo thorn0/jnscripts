@@ -20,14 +20,15 @@
             input_stream.Close();
             var savedIncludeDir = includeDir;
             includeDir = file_path.replace(/\\[^\\]*$/, "");
-            var exports = modules[file_path] = {};
+            var module = { exports: {} };
+            var exports = modules[file_path] = module.exports;
             try {
                 eval("(function(){" + module_code + ";})()");
             } catch (e) {
                 alert("error loading '" + path + "': " + e.message);
             }
             includeDir = savedIncludeDir;
-            return exports;
+            return module.exports;
         }
     };
 })();
