@@ -1,4 +1,4 @@
-/*global Editor, require, jsMenu: true, alert, getEditorConfig, normalizeEol, addHotKey */
+/*global Editor, require, jsMenu: true, Scintilla */
 (function() {
 
     require("lib/Scintilla.js");
