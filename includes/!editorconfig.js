@@ -1,11 +1,14 @@
+require("lib/Scintilla.js");
+
 function getEditorConfig() {
+    var sci = new Scintilla(Editor.currentView.handle);
     var fullFileName = Editor.currentView.files[Editor.currentView.file];
-    // TBD: replace with a logic based on http://editorconfig.org
     var isCmw = /^d:\\cmw\\/i.test(fullFileName);
-    var useTabs = isCmw;
-    var useCrLf = isCmw;
+    var useTabs = !!sci.Call("SCI_GETUSETABS");
+    var eolMode = sci.Call("SCI_GETEOLMODE");
+    var useCrLf = eolMode === 0;
     var eol = isCmw ? '\r\n' : '\n';
-    var tab = isCmw ? "\t" : "    ";
+    var tab = isCmw ? "\t" : Array(sci.Call("SCI_GETTABWIDTH") + 1).join(" ");
     return {
         useTabs: useTabs,
         useCrLf: useCrLf,
