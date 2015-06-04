@@ -71,7 +71,10 @@
                 // fix broken LESS markup
                 finalCode = finalCode.replace(/(\S:) (extend|hover|focus|active)\b/g, '$1$2');
             } else {
-                finalCode = finalCode.replace(/\b(export|declare)[\s\n\r]+(var|function)\b/g, '$1 $2'); // TypeScript
+                // TypeScript
+                finalCode = finalCode
+                    .replace(/\b(export|declare)[\s\n\r]+(var|function)\b/g, '$1 $2')
+                    .replace(/ \? (\)|,)/g, '?$1');
             }
             view[viewProp] = normalizeEol(finalCode);
             view.line = savedLine + 7; // adjust the scroll position
