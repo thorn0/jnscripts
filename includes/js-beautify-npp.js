@@ -14,6 +14,8 @@
             // for the CSS beautifier
             settings.indent_size = 1;
             settings.indent_char = '\t';
+        } else {
+            settings.indent_size = editorConfig.tab.length;
         }
         return settings;
     }
