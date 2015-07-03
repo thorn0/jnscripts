@@ -5,7 +5,8 @@
         var settings = {
             preserve_newlines: true,
             max_preserve_newlines: 2,
-            jslint: true
+            jslint: true,
+            e4x: true
         };
         var editorConfig = getEditorConfig();
         if (editorConfig.useTabs) {
