@@ -18,6 +18,12 @@
         } else {
             settings.indent_size = editorConfig.tab.length;
         }
+        settings.eol = editorConfig.eol;
+        if (detectAllman()) {
+            settings.brace_style = 'none';
+            settings.space_in_paren = true;
+            settings.end_with_newline = true;
+        }
         return settings;
     }
 
