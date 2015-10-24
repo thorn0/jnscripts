@@ -23,6 +23,7 @@
             settings.brace_style = 'none';
             settings.space_in_paren = true;
             settings.end_with_newline = true;
+            settings.space_before_conditional = false;
         }
         return settings;
     }
