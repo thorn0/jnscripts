@@ -1,48 +1,50 @@
 (function() {
-    var includeDir = Editor.nppDir + "\\plugins\\jN\\includes",
+    var includeDir = Editor.nppDir + '\\plugins\\jN\\includes',
         modules = {},
-        fso, savedRequire;
-
-    if (typeof require !== 'undefined') {
-        savedRequire = require;
-    }
+        savedRequire = require,
+        fso = new ActiveXObject('Scripting.FileSystemObject');
 
     require = function(path) {
-        if (!fso) {
-            fso = new ActiveXObject("Scripting.FileSystemObject");
-        }
-        var file_path = (includeDir + "/" + path.replace(/^\.[\/\\]/, "") + ".js").replace(/\//g, "\\");
-        if (modules[file_path]) {
-            return modules[file_path];
-        }
-        if (!fso.FileExists(file_path)) {
-            if (savedRequire) {
-                savedRequire(path);
+        var filePath = (includeDir + '/' + path.replace(/^\.[\/\\]/, '') + '.js').replace(/\//g, '\\');
+        if (!(filePath in modules)) {
+            if (!fso.FileExists(filePath)) {
+                if (savedRequire) {
+                    savedRequire(path);
+                } else {
+                    alert('not found: ' + filePath);
+                }
+                modules[filePath] = null;
             } else {
-                alert("not found: " + file_path);
+                var moduleCode = readFile(filePath);
+                var savedIncludeDir = includeDir;
+                includeDir = filePath.replace(/\\[^\\]*$/, '');
+                var module = {
+                    exports: {}
+                };
+                modules[filePath] = module.exports;
+                try {
+                    var fn = new Function('exports', 'module', moduleCode);
+                    fn(module.exports, module);
+                } catch (e) {
+                    alert("error loading '" + path + "': " + e.message);
+                }
+                modules[filePath] = module.exports;
+                includeDir = savedIncludeDir;
             }
-        } else {
-            var input_stream = fso.OpenTextFile(file_path, 1, false, 0);
-            var module_code = input_stream.ReadAll();
-            module_code = decodeFrom(65001, module_code);
-            input_stream.Close();
-            var savedIncludeDir = includeDir;
-            includeDir = file_path.replace(/\\[^\\]*$/, "");
-            var module = {
-                exports: {}
-            };
-            var exports = modules[file_path] = module.exports;
-            try {
-                eval("(function(){" + module_code + ";})()");
-            } catch (e) {
-                alert("error loading '" + path + "': " + e.message);
-            }
-            includeDir = savedIncludeDir;
-            return module.exports;
         }
+        return modules[filePath];
     };
 
     if (savedRequire) {
-        require.hash = savedRequire.hash;
+        for (var prop in savedRequire) {
+            require[prop] = savedRequire[prop];
+        }
+    }
+
+    function readFile(filePath) {
+        var inputStream = fso.OpenTextFile(filePath, 1, false, 0);
+        var content = decodeFrom(65001, inputStream.ReadAll());
+        inputStream.Close();
+        return content;
     }
 })();
