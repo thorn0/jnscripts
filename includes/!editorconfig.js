@@ -23,11 +23,10 @@ function normalizeEol(string) {
 
 // Simple heuristics to detect (and preserve) Allman-style braces
 function detectAllman() {
-    var text = Editor.currentView.text,
+    var text = Editor.currentView.text.replace(/\/\*.*?\*\//g, ''),
         re = /\{(?!(\s*|\w+)\})/g, // Ignore empty object literals and JSDoc type annotations.
-        match, eqFound;
+        match;
     do {
-        eqFound = false;
         match = re.exec(text);
         if (match) {
             // Ignore lines where '=' precedes the brace.
@@ -35,19 +34,21 @@ function detectAllman() {
             var eqIdx = text.lastIndexOf('=', match.index);
             var nlIdx = text.lastIndexOf('\n', match.index);
             if (eqIdx > nlIdx) {
-                eqFound = /^[ \t]*$/.test(text.slice(eqIdx + 1, match.index));
+                var eqFound = /^[ \t]*$/.test(text.slice(eqIdx + 1, match.index));
+                if (eqFound) {
+                    continue;
+                }
             }
-        }
-    } while (match && eqFound);
-    if (match) {
-        var precedingNlIdx = text.lastIndexOf('\n', match.index);
-        if (precedingNlIdx !== -1) {
-            var followingNlIdx = text.indexOf('\n', match.index);
-            if (followingNlIdx !== -1) {
-                var line = text.slice(precedingNlIdx + 1, followingNlIdx);
-                return /^\s*\{\s*$/.test(line);
+            var precedingNlIdx = text.lastIndexOf('\n', match.index);
+            if (precedingNlIdx !== -1) {
+                var followingNlIdx = text.indexOf('\n', match.index);
+                if (followingNlIdx !== -1) {
+                    var line = text.slice(precedingNlIdx + 1, followingNlIdx);
+                    return /^\s*\{\s*$/.test(line);
+                }
             }
+            return false;
         }
-    }
+    } while (match);
     return false;
 }
