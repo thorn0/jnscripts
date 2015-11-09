@@ -85,6 +85,10 @@
                 finalCode = finalCode
                     .replace(/\b(export|declare)[\s\n\r]+(var|function)\b/g, '$1 $2')
                     .replace(/ \? (\)|,)/g, '?$1');
+                // ES6 extended object literals like { a, b } should stay on one line
+                finalCode = finalCode.replace(/\{([\w\s,]+?)\}/g, function($0, $1) {
+                    return '{' + (' ' + $1 + ' ').replace(/\s+/g, ' ') + '}';
+                });
             }
             view[viewProp] = normalizeEol(finalCode);
             view.line = savedLine + 7; // adjust the scroll position
