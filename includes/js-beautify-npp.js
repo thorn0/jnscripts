@@ -87,6 +87,9 @@
                     .replace(/ \? (\)|,)/g, '?$1');
                 // ES6 extended object literals like { a, b } should stay on one line
                 finalCode = finalCode.replace(/\{([\w\s,]+?)\}/g, function($0, $1) {
+                    if ($1.indexOf('\n') === -1) {
+                        return $0;
+                    }
                     return '{' + (' ' + $1 + ' ').replace(/\s+/g, ' ') + '}';
                 });
             }
