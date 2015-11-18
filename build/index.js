@@ -1,39 +1,31 @@
 /*jshint node:true*/
 var ug = require('uglify-js'),
     path = require('path'),
-    streamee = require('streamee'),
-    fs = require('fs'),
-    stream = require('stream');
-
-var dest = fs.createWriteStream('../includes/UglifyJS2/uglifyjs2.js');
+    fs = require('fs');
 
 var prefix = '(function(){\n';
 var suffix = '\n}());';
 
-var srcStreams = ug.FILES.filter(function(file) {
+var parts = ug.FILES.filter(function(file) {
     var bn = path.basename(file, '.js');
-    return bn != 'sourcemap' && bn != 'mozilla-ast';
+    return bn !== 'sourcemap' && bn !== 'mozilla-ast' && bn !== 'exports';
 }).map(function(file) {
-    return fs.createReadStream(file);
+    return fs.readFileSync(file, 'utf8');
 });
 
-var exportCode = [];
 var keys = Object.keys(ug);
 var tpl = 'if (typeof @ != "undefined") exports["@"] = @;\n';
 for (var i = 0; i < keys.length; i++) {
-    exportCode.push(tpl.replace(/@/g, keys[i]));
+    parts.push(tpl.replace(/@/g, keys[i]));
 }
 
-srcStreams.unshift(stringToStream(prefix));
-srcStreams.push(stringToStream(exportCode.join("")));
-srcStreams.push(stringToStream(suffix));
+parts.unshift(prefix);
+parts.push('var fs={readFileSync:function(){return""}},UglifyJS=exports;');
+parts.push('exports.minify=' + ug.minify);
+parts.push(suffix);
 
-streamee.concatenate(srcStreams).pipe(dest, false);
+var result = ug.minify(parts.join(''), {
+    fromString: true
+}).code;
 
-function stringToStream(stringValue) {
-    var s = new stream.Readable();
-    s._read = function noop() {};
-    s.push(stringValue);
-    s.push(null);
-    return s;
-}
+fs.writeFileSync('../includes/UglifyJS2/uglifyjs2.js', result);
