@@ -7,7 +7,6 @@
     var UglifyJS;
 
     function ensureUglifyJS2() {
-        require('UglifyJS2/json2');
         UglifyJS = require('UglifyJS2/uglifyjs2');
     }
 

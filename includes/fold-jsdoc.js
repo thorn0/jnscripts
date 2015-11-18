@@ -1,18 +1,17 @@
-/*global Editor, require, jsMenu: true, Scintilla */
 (function() {
 
-    require("lib/Scintilla.js");
-
-    var menu;
     if (typeof jsMenu === "undefined") {
-        menu = jsMenu = Editor.addMenu("JavaScript");
-    } else {
-        menu = jsMenu;
+        jsMenu = Editor.addMenu("JavaScript");
     }
+
+    var menu = jsMenu;
 
     var action = {
         text: "Fold JSDoc",
         cmd: function() {
+            if (typeof Scintilla === 'undefined') {
+                require('lib/Scintilla.js');
+            }
             var view = Editor.currentView,
                 lines = view.lines,
                 savedLine = view.line,
@@ -26,6 +25,7 @@
             view.line = savedLine;
         }
     };
+
     menu.addItem(action);
 
 })();

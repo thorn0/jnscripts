@@ -1,6 +1,7 @@
-require('lib/Scintilla.js');
-
 getEditorConfig = function() {
+    if (typeof Scintilla === 'undefined') {
+        require('lib/Scintilla.js');
+    }
     var sci = new Scintilla(Editor.currentView.handle);
     var useTabs = !!sci.Call('SCI_GETUSETABS');
     var eolMode = sci.Call('SCI_GETEOLMODE');
