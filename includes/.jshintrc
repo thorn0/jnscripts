@@ -1,0 +1,29 @@
+{
+    "bitwise": true,
+    "boss": false,
+    "curly": false,
+    "devel": true,
+    "eqeqeq": true,
+    "eqnull": true,
+    "expr": true,
+    "globals": {
+        "ActiveXObject": false,
+        "Editor": false,
+        "Scintilla": false,
+        "addHotKey": false,
+        "catchAndShowException": true,
+        "decodeFrom": false,
+        "detectAllman": true,
+        "getEditorConfig": true,
+        "jsMenu": true,
+        "normalizeEol": true,
+        "normalizeSpaces": true,
+        "require": true
+    },
+    "immed": true,
+    "latedef": false,
+    "newcap": true,
+    "noarg": true,
+    "undef": true,
+    "unused": "vars"
+}

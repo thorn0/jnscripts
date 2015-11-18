@@ -1,28 +1,34 @@
-require("lib/Scintilla.js");
+require('lib/Scintilla.js');
 
-function getEditorConfig() {
+getEditorConfig = function() {
     var sci = new Scintilla(Editor.currentView.handle);
-    var fullFileName = Editor.currentView.files[Editor.currentView.file];
-    var useTabs = !!sci.Call("SCI_GETUSETABS");
-    var eolMode = sci.Call("SCI_GETEOLMODE");
+    var useTabs = !!sci.Call('SCI_GETUSETABS');
+    var eolMode = sci.Call('SCI_GETEOLMODE');
     var useCrLf = eolMode === 0;
     var eol = useCrLf ? '\r\n' : '\n';
-    var tab = useTabs ? "\t" : Array(sci.Call("SCI_GETTABWIDTH") + 1).join(" ");
+    var tab = useTabs ? '\t' : new Array(sci.Call('SCI_GETTABWIDTH') + 1).join(' ');
     return {
         useTabs: useTabs,
         useCrLf: useCrLf,
         eol: eol,
         tab: tab
     };
-}
+};
 
-function normalizeEol(string) {
+normalizeEol = function(string) {
     var editorConfig = getEditorConfig();
     return string.replace(/\r\n|\n\r|\n|\r/g, editorConfig.eol);
-}
+};
+
+normalizeSpaces = function(s, extra) {
+    var tab = getEditorConfig().tab;
+    return s.replace(/^( {4})*/gm, function($0) {
+        return new Array($0.length / 4 + 1 + (extra || 0)).join(tab);
+    });
+};
 
 // Simple heuristics to detect (and preserve) Allman-style braces
-function detectAllman() {
+detectAllman = function() {
     var text = Editor.currentView.text.replace(/\/\*.*?\*\//g, ''),
         re = /\{(?!(\s*|\w+)\})/g, // Ignore empty object literals and JSDoc type annotations.
         match;
@@ -51,4 +57,4 @@ function detectAllman() {
         }
     } while (match);
     return false;
-}
+};

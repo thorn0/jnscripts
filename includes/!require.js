@@ -23,10 +23,11 @@
                 };
                 modules[filePath] = module.exports;
                 try {
+                    /*jshint evil:true*/
                     var fn = new Function('exports', 'module', moduleCode);
                     fn(module.exports, module);
                 } catch (e) {
-                    alert("error loading '" + path + "': " + e.message);
+                    alert('error loading \'' + path + '\': ' + e.message);
                 }
                 modules[filePath] = module.exports;
                 includeDir = savedIncludeDir;

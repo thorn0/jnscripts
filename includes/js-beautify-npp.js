@@ -1,4 +1,3 @@
-/*global Editor, require, jsMenu: true, alert, getEditorConfig, normalizeEol, addHotKey */
 (function() {
 
     function getSettings() {
@@ -39,26 +38,27 @@
         }
     }
 
-    var menu;
-    if (typeof jsMenu === "undefined") {
-        menu = jsMenu = Editor.addMenu("JavaScript");
-    } else {
-        menu = jsMenu;
+    if (typeof jsMenu === 'undefined') {
+        jsMenu = Editor.addMenu('JavaScript');
     }
 
+    var menu = jsMenu;
+
     var action = {
-        text: "JS Beautifier\tCtrl+Q",
+        text: 'JS Beautifier\tCtrl+Q',
         cmd: function() {
             callBeautifier(getSettings());
         },
         ctrl: true,
         key: 'q'
     };
+
     menu.addItem(action);
+
     addHotKey(action);
 
     menu.addItem({
-        text: "JS Beautifier (2 spaces)",
+        text: 'JS Beautifier (2 spaces)',
         cmd: function() {
             var settings = getSettings();
             settings.indent_with_tabs = false;
@@ -94,21 +94,9 @@
                 });
             }
             view[viewProp] = normalizeEol(finalCode);
-            view.line = savedLine + 7; // adjust the scroll position
+            // adjust the scroll position
+            view.line = savedLine + 7;
             view.line = savedLine;
         })();
-    }
-
-    function catchAndShowException(f) {
-        return function() {
-            try {
-                f.apply();
-            } catch (e) {
-                if (!e.stack) {
-                    e.stack = '';
-                }
-                alert(e);
-            }
-        };
     }
 })();
