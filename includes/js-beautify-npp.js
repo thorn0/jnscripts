@@ -18,6 +18,7 @@
             settings.indent_size = editorConfig.tab.length;
         }
         settings.eol = editorConfig.eol;
+        settings.keep_array_indentation = true;
         if (detectAllman()) {
             settings.brace_style = 'none';
             settings.space_in_paren = true;
@@ -76,24 +77,27 @@
                 savedLine = view.line,
                 viewProp = view.selection ? 'selection' : 'text',
                 origCode = view[viewProp],
-                finalCode = beautifier(normalizeEol(origCode), settings);
+                code = beautifier(normalizeEol(origCode), settings);
             if (css) {
                 // fix broken LESS markup
-                finalCode = finalCode.replace(/(\S:) (extend|hover|focus|active)\b/g, '$1$2');
+                code = code.replace(/(\S:) (extend|hover|focus|active)\b/g, '$1$2');
             } else {
                 // TypeScript
-                finalCode = finalCode
+                code = code
                     .replace(/\b(export|declare)[\s\n\r]+(var|function)\b/g, '$1 $2')
                     .replace(/ \? (\)|,)/g, '?$1');
                 // ES6 extended object literals like { a, b } should stay on one line
-                finalCode = finalCode.replace(/\{([\w\s,]+?)\}/g, function($0, $1) {
+                code = code.replace(/\{([\w\s,]+?)\}(\s+from)?/g, function($0, $1, $2) {
+                    var objLiteral;
                     if ($1.indexOf('\n') === -1) {
-                        return $0;
+                        objLiteral = $0;
+                    } else {
+                        objLiteral = '{' + (' ' + $1 + ' ').replace(/\s+/g, ' ') + '}';
                     }
-                    return '{' + (' ' + $1 + ' ').replace(/\s+/g, ' ') + '}';
+                    return objLiteral + ($2 ? ' from' : '');
                 });
             }
-            view[viewProp] = normalizeEol(finalCode);
+            view[viewProp] = normalizeEol(code);
             // adjust the scroll position
             view.line = savedLine + 7;
             view.line = savedLine;
