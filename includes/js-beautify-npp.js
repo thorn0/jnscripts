@@ -5,7 +5,8 @@
             preserve_newlines: true,
             max_preserve_newlines: 2,
             jslint: true,
-            e4x: true
+            e4x: true,
+            brace_style: 'collapse-preserve-inline'
         };
         var editorConfig = getEditorConfig();
         if (editorConfig.useTabs) {
@@ -18,7 +19,7 @@
             settings.indent_size = editorConfig.tab.length;
         }
         settings.eol = editorConfig.eol;
-        settings.keep_array_indentation = true;
+        // settings.keep_array_indentation = true;
         if (detectAllman()) {
             settings.brace_style = 'none';
             settings.space_in_paren = true;
@@ -83,11 +84,14 @@
                 code = code.replace(/(\S:) (extend|hover|focus|active)\b/g, '$1$2');
             } else {
                 // TypeScript
-                code = code
+                /*code = code
                     .replace(/\b(export|declare)[\s\n\r]+(var|function)\b/g, '$1 $2')
+                    .replace(/ \? (\)|,)/g, '?$1');*/
+                code = code
+                    .replace(/\b(declare)[\s\n\r]+(var|function)\b/g, '$1 $2')
                     .replace(/ \? (\)|,)/g, '?$1');
                 // ES6 extended object literals like { a, b } should stay on one line
-                code = code.replace(/\{([\w\s,]+?)\}(\s+from)?/g, function($0, $1, $2) {
+                /*code = code.replace(/\{([\w\s,]+?)\}(\s+from)?/g, function($0, $1, $2) {
                     var objLiteral;
                     if ($1.indexOf('\n') === -1) {
                         objLiteral = $0;
@@ -95,7 +99,7 @@
                         objLiteral = '{' + (' ' + $1 + ' ').replace(/\s+/g, ' ') + '}';
                     }
                     return objLiteral + ($2 ? ' from' : '');
-                });
+                });*/
             }
             view[viewProp] = normalizeEol(code);
             // adjust the scroll position
