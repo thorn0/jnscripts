@@ -18,7 +18,8 @@
         "jsMenu": true,
         "normalizeEol": true,
         "normalizeSpaces": true,
-        "require": true
+        "require": true,
+        "vb": true
     },
     "immed": true,
     "latedef": false,

@@ -16,9 +16,8 @@ getEditorConfig = function() {
     };
 };
 
-normalizeEol = function(string) {
-    var editorConfig = getEditorConfig();
-    return string.replace(/\r\n|\n\r|\n|\r/g, editorConfig.eol);
+normalizeEol = function(string, sep) {
+    return string.replace(/\r\n|\n\r|\n|\r/g, sep || getEditorConfig().eol);
 };
 
 normalizeSpaces = function(s, extra) {

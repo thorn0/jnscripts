@@ -20,7 +20,7 @@ vb = (function(vbe) {
         var args = [
             toVBStringParam(prompt),
             toVBStringParam(title),
-            toVBStringParam(msg),
+            toVBStringParam(msg)
         ];
         if (xpos != null) {
             args.push(xpos);
