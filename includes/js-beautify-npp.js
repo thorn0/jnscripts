@@ -83,6 +83,7 @@
                 // fix broken LESS markup
                 code = code.replace(/(\S:) (extend|hover|focus|active)\b/g, '$1$2');
             } else {
+                code = code.replace(/\bnew\(/g, 'new (');
                 // TypeScript
                 /*code = code
                     .replace(/\b(export|declare)[\s\n\r]+(var|function)\b/g, '$1 $2')
@@ -100,6 +101,10 @@
                     }
                     return objLiteral + ($2 ? ' from' : '');
                 });*/
+                // sweet.js (pre-1.0)
+                code = code
+                    .replace(/return#/g, 'return #')
+                    .replace(/# \{/g, '#{');
             }
             view[viewProp] = normalizeEol(code);
             // adjust the scroll position

@@ -6,11 +6,11 @@
 
     var COMMENT = ' * ';
 
-    menu.addItem({
+    var action = {
         text: 'Wrap',
         cmd: function() {
             var editorConfig = getEditorConfig();
-            var input = vb.inputBox('', 'Line length', '80-105');
+            var input = vb.inputBox('', 'Line length', '99-105');
             if (!input) return;
             var m = input.match(/^(\d{2,3})(?:-(\d{2,3}))?$/);
             if (!m) return;
@@ -80,6 +80,11 @@
             }
 
             Editor.currentView[viewProp] = result.join(editorConfig.eol);
-        }
-    });
+        },
+        ctrl: true,
+        key: 'r'
+    };
+
+    menu.addItem(action);
+    addHotKey(action);
 })();
