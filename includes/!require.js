@@ -5,7 +5,7 @@
         fso = new ActiveXObject('Scripting.FileSystemObject');
 
     require = function(path) {
-        var filePath = (includeDir + '/' + path.replace(/^\.[\/\\]/, '') + '.js').replace(/\//g, '\\');
+        var filePath = (includeDir + '/' + path.replace(/^\.[\/\\]/, '').replace(/\.js$/i, '') + '.js').replace(/\//g, '\\');
         if (!(filePath in modules)) {
             if (!fso.FileExists(filePath)) {
                 if (savedRequire) {

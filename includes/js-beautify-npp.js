@@ -1,6 +1,7 @@
 (function() {
 
     function getSettings() {
+        // https://github.com/beautify-web/js-beautify
         var settings = {
             preserve_newlines: true,
             max_preserve_newlines: 2,
@@ -29,14 +30,18 @@
         return settings;
     }
 
-    var js_beautify, css_beautify;
+    var beautifiers, uglify1;
 
     function ensureBeautifiers() {
-        if (typeof js_beautify === 'undefined') {
-            js_beautify = require('js-beautify/beautify').js_beautify;
+        if (typeof beautifiers === 'undefined') {
+            beautifiers = {
+                js: require('js-beautify/beautify').js_beautify,
+                css: require('js-beautify/beautify-css').css_beautify,
+                html: require('js-beautify/beautify-html').html_beautify
+            };
         }
-        if (typeof css_beautify === 'undefined') {
-            css_beautify = require('js-beautify/beautify-css').css_beautify;
+        if (typeof uglify1 === 'undefined') {
+            uglify1 = require("UglifyJS/uglify-js");
         }
     }
 
@@ -47,7 +52,7 @@
     var menu = jsMenu;
 
     var action = {
-        text: 'JS Beautifier\tCtrl+Q',
+        text: 'Beautifier\tCtrl+Q',
         cmd: function() {
             callBeautifier(getSettings());
         },
@@ -60,7 +65,7 @@
     addHotKey(action);
 
     menu.addItem({
-        text: 'JS Beautifier (2 spaces)',
+        text: 'Beautifier (2 spaces)',
         cmd: function() {
             var settings = getSettings();
             settings.indent_with_tabs = false;
@@ -73,16 +78,28 @@
         catchAndShowException(function() {
             ensureBeautifiers();
             var view = Editor.currentView,
-                css = /\.(less|css)$/i.test(view.files[view.file]),
-                beautifier = css ? css_beautify : js_beautify,
+                fname = view.files[view.file],
+                lang = /\.(le|c)ss$/i.test(fname) ? 'css' : /\.html?$/i.test(fname) ? 'html' : 'js',
+                beautifier = beautifiers[lang],
                 savedLine = view.line,
                 viewProp = view.selection ? 'selection' : 'text',
                 origCode = view[viewProp],
-                code = beautifier(normalizeEol(origCode), settings);
-            if (css) {
+                isJson = lang === 'js' && (/^\s*(\{[\s\S]+\}|\[[\s\S]+\];?)\s*$/.test(origCode) || /\.json$/i.test(fname)),
+                code = origCode;
+            if (isJson) {
+                var uglifyOptions = {
+                    beautify: true,
+                    quote_keys: true
+                };
+                code = uglify1.uglify.gen_code(uglify1.parser.parse("(" + code + ")"), uglifyOptions).replace(/;\s*$/, "");
+                settings.wrap_line_length = settings.wrap_line_length || 80;
+            }
+            code = beautifier(normalizeEol(code), settings);
+            if (lang === 'css') {
                 // fix broken LESS markup
                 code = code.replace(/(\S:) (extend|hover|focus|active)\b/g, '$1$2');
-            } else {
+            }
+            if (lang === 'js') {
                 code = code.replace(/\bnew\(/g, 'new (');
                 // TypeScript
                 /*code = code
@@ -91,7 +108,7 @@
                 code = code
                     .replace(/\b(declare)[\s\n\r]+(var|function)\b/g, '$1 $2')
                     .replace(/ \? (\)|,)/g, '?$1');
-                // ES6 extended object literals like { a, b } should stay on one line
+                // ES2015 extended object literals like { a, b } should stay on one line
                 /*code = code.replace(/\{([\w\s,]+?)\}(\s+from)?/g, function($0, $1, $2) {
                     var objLiteral;
                     if ($1.indexOf('\n') === -1) {
@@ -103,7 +120,7 @@
                 });*/
                 // sweet.js (pre-1.0)
                 code = code
-                    .replace(/return#/g, 'return #')
+                    .replace(/return #/g, 'return #')
                     .replace(/# \{/g, '#{');
             }
             view[viewProp] = normalizeEol(code);
