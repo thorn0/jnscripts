@@ -123,7 +123,11 @@
                     .replace(/return #/g, 'return #')
                     .replace(/# \{/g, '#{');
             }
-            view[viewProp] = normalizeEol(code);
+            code = normalizeEol(code);
+            if (viewProp === 'text' && /[\n\r]$/.test(origCode)) {
+                code += settings.eol;
+            }
+            view[viewProp] = code;
             // adjust the scroll position
             view.line = savedLine + 7;
             view.line = savedLine;
